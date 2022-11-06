@@ -53,4 +53,8 @@ function init() {
                 break;
         }
     })
+};
+
+function viewAllDepartments() {
+    
 }
