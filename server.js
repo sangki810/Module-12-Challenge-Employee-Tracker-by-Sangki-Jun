@@ -16,12 +16,12 @@ connection.connect(err => {
 });
 
 function init() {
-    inquirer.createPromptModule([
+    inquirer.prompt([
         {
             name: 'mainMenu',
             type: 'list',
             message: 'What would you like to do?',
-            choices: ['View All Departments', 'View All Roles', 'View All Employees', 'Add a Department', 'Add a Role', 'Add an Employee', 'Update an Employee Role']
+            choices: ['View All Departments', 'View All Roles', 'View All Employees', 'Add a Department', 'Add a Role', 'Add an Employee', 'Update an Employee Role', 'Quit']
         }
     ]).then(response => {
         switch (response.mainMenu) {
@@ -56,5 +56,122 @@ function init() {
 };
 
 function viewAllDepartments() {
-    
-}
+    const sqlString=`
+    SELECT *
+    FROM department`
+
+    connection.query(sqlString, (err, data) => {
+        if(err) throw err;
+        console.log("\n")
+        console.table(data)
+        console.log("\n")
+        init()
+    })
+};
+
+function viewAllRoles() {
+    const sqlString=`
+    SELECT *
+    FROM role`
+
+    connection.query(sqlString, (err, data) => {
+        if(err) throw err;
+        console.log("\n")
+        console.table(data)
+        console.log("\n")
+        init()
+    })
+};
+
+function viewAllEmployees() {
+    const sqlString=`
+    SELECT *
+    FROM employee`
+
+    connection.query(sqlString, (err, data) => {
+        if(err) throw err;
+        console.log("\n")
+        console.table(data)
+        console.log("\n")
+        init()
+    })
+};
+
+function addADepartment() {
+    inquirer.prompt([
+        {
+            name: 'depName',
+            message: 'What is the name of the department?'
+            
+        }
+    ]).then(answer => {
+        const sqlString=`
+        INSERT INTO department(name)
+        VALUES (?)`
+        
+        connection.query(sqlString, [answer.depName], (err, data) => {
+            if(err) throw err;
+            init()
+        })
+    }) 
+};
+
+function addARole() {
+    const sqlString = `
+    SELECT *
+    FROM department;`
+
+    connection.query(sqlString, (err, data) =>{
+        let departments = data.map(department => ({name: department.name, value: department.id }));
+        inquirer.prompt([
+            {
+                name: 'roleName',
+                message: 'What is the name of the role?'
+            
+            },
+            {
+                name: 'roleSalary',
+                message: 'What is the salary of the role?'
+            },
+            {
+                name: 'roleDepartment',
+                message: 'Which department does the role belong to?',
+                type: 'list',
+                choices: departments
+            }
+        ]).then(answer => {
+            const sqlString=`
+            INSERT INTO role
+            SET ?`
+        
+            connection.query(sqlString, 
+                {
+                    title: answer.roleName, 
+                    salary: answer.roleSalary, 
+                    department_id: answer.roleDepartment
+                }, 
+                (err, data) => {
+                if(err) throw err;
+                init()
+            })
+        }) 
+    })
+};
+
+function addAnEmployee() {
+    inquirer.prompt([
+        {
+            message: "What is the name of the department?",
+            name: "depName"
+        }
+    ]).then(answer => {
+        const sqlString=`
+        INSERT INTO department(name)
+        VALUES (?)`
+        
+        connection.query(sqlString, [answer.depName], (err, data) => {
+            if(err) throw err;
+            init()
+        })
+    }) 
+};
