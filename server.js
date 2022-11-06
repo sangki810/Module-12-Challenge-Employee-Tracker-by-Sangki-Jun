@@ -122,10 +122,11 @@ function addARole() {
     FROM department;`
 
     connection.query(sqlString, (err, data) =>{
+        if(err) throw err;
         let departments = data.map(department => ({name: department.name, value: department.id }));
         inquirer.prompt([
             {
-                name: 'roleName',
+                name: 'roleTitle',
                 message: 'What is the name of the role?'
             
             },
@@ -146,7 +147,7 @@ function addARole() {
         
             connection.query(sqlString, 
                 {
-                    title: answer.roleName, 
+                    title: answer.roleTitle, 
                     salary: answer.roleSalary, 
                     department_id: answer.roleDepartment
                 }, 
@@ -159,19 +160,60 @@ function addARole() {
 };
 
 function addAnEmployee() {
-    inquirer.prompt([
-        {
-            message: "What is the name of the department?",
-            name: "depName"
-        }
-    ]).then(answer => {
-        const sqlString=`
-        INSERT INTO department(name)
-        VALUES (?)`
-        
-        connection.query(sqlString, [answer.depName], (err, data) => {
+    const sqlString1 = `
+    SELECT *
+    FROM role;`
+
+    const sqlString2 =`
+    SELECT * 
+    FROM employee`
+
+    connection.query(sqlString1, (err, data) =>{
+        if(err) throw err;
+        let roles = data.map(role => ({name: role.title, value: role.id }));
+        connection.query(sqlString2, (err, data) => {
             if(err) throw err;
-            init()
+            let employees = data.map(employee => ({name: employee.first_name + ' ' + employee.last_name, value: employee.id}));
+            inquirer.prompt([
+                {
+                    name: 'empFirstName',
+                    message: 'What is the employee\'s first name?'
+            
+                },
+                {
+                    name: 'empLastName',
+                    message: 'What is the employee\'s last name?'
+                },
+                {
+                    name: 'empRole',
+                    message: 'What is the employee\'s role?',
+                    type: 'list',
+                    choices: roles
+                },
+                {
+                    name: 'empManager',
+                    message: 'Who is the employee\'s manager?',
+                    type: 'list',
+                    choices: employees
+
+                }
+            ]).then(answer => {
+                const sqlString=`
+                INSERT INTO employee
+                SET ?`
+        
+                connection.query(sqlString, 
+                    {
+                        first_name: answer.empFirstName,
+                        last_name: answer.empLastName,
+                        role_id: answer.empRole,
+                        manager_id: answer.empManager
+                    }, 
+                    (err, data) => {
+                    if(err) throw err;
+                    init()
+                })
+            }) 
         })
-    }) 
+    })
 };
