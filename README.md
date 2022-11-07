@@ -29,7 +29,7 @@ If something goes wrong with number 3: <br />
 1. Open the integrated terminal and run `node server.js`.
 2. Choose an option to view or update the information already in the database. <br /> 
 
-You can get a more detailed instruction using this link: [Video Instruction]()
+You can get a more detailed instruction using this link: [Video Instruction](https://drive.google.com/file/d/12NxQYjJxNwNNA61QVvSq6pyxFf9dHAx0/view)
 
 ## Contributing
 If you have any good ideas or changes you want to share, you can create a pull request or add issues to the repository. You can also contact me using the information in the [Questions](#questions) section.<br />
