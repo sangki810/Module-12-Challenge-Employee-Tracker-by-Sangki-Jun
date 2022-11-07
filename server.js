@@ -50,25 +50,25 @@ function init() {
         // calls functions below that matches the answer to question above
         switch (answer.mainMenu) {
             case 'View All Departments':
-                viewAllDepartments();
+                viewAllDep();
                 break;
             case 'View All Roles':
                 viewAllRoles();
                 break;
             case 'View All Employees':
-                viewAllEmployees();
+                viewAllEmp();
                 break;
             case 'Add a Department':
-                addADepartment();
+                addADep();
                 break;
             case 'Add a Role':
                 addARole();
                 break;
             case 'Add an Employee':
-                addAnEmployee();
+                addAnEmp();
                 break;
             case 'Update an Employee Role':
-                updateAnEmployeeRole();
+                updateAnEmpRole();
                 break;
             // ends app when chosen
             case 'Quit':
@@ -81,7 +81,7 @@ function init() {
 };
 
 // displays department table from mysql database in CLI
-function viewAllDepartments() {
+function viewAllDep() {
     // sql command held in separate variable
     const sqlString=`
     SELECT *
@@ -117,7 +117,7 @@ function viewAllRoles() {
 };
 
 // displays employee table from mysql database in CLI
-function viewAllEmployees() {
+function viewAllEmp() {
     // sql command held in separate variable
     const sqlString=`
     SELECT *
@@ -135,7 +135,7 @@ function viewAllEmployees() {
 };
 
 // adds a new department to the databse in mysql
-function addADepartment() {
+function addADep() {
     inquirer.prompt([
         {
             name: 'depName',
@@ -151,7 +151,7 @@ function addADepartment() {
         connection.query(sqlString, [answer.depName], (err, data) => {
             if(err) throw err;
             // called to confirm changes made to the database
-            viewAllDepartments();
+            viewAllDep();
         })
     }) 
 };
@@ -209,7 +209,7 @@ function addARole() {
 };
 
 // adds a new employee to the databse in mysql
-function addAnEmployee() {
+function addAnEmp() {
     // sql command held in separate variable
     const sqlString1 = `
     SELECT *
@@ -270,7 +270,7 @@ function addAnEmployee() {
                     (err, data) => {
                     if(err) throw err;
                     // called to confirm changes made to the database
-                    viewAllEmployees();
+                    viewAllEmp();
                 })
             }) 
         })
@@ -278,7 +278,7 @@ function addAnEmployee() {
 };
 
 // updates role of existing employee
-function updateAnEmployeeRole() {
+function updateAnEmpRole() {
     // sql command held in separate variable
     const sqlString1 = `
     SELECT *
@@ -330,7 +330,7 @@ function updateAnEmployeeRole() {
                     (err, data) => {
                         if(err) throw err;
                         // called to confirm changes made to the database
-                        viewAllEmployees();
+                        viewAllEmp();
                 })
             })
         })
