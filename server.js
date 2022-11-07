@@ -15,13 +15,29 @@ connection.connect(err => {
     init();
 });
 
+console.log(`
+╔═══╗─────╔╗──────────────╔═╗╔═╗
+║╔══╝─────║║──────────────║║╚╝║║
+║╚══╦╗╔╦══╣║╔══╦╗─╔╦══╦══╗║╔╗╔╗╠══╦═╗╔══╦══╦══╦═╗
+║╔══╣╚╝║╔╗║║║╔╗║║─║║║═╣║═╣║║║║║║╔╗║╔╗╣╔╗║╔╗║║═╣╔╝
+║╚══╣║║║╚╝║╚╣╚╝║╚═╝║║═╣║═╣║║║║║║╔╗║║║║╔╗║╚╝║║═╣║
+╚═══╩╩╩╣╔═╩═╩══╩═╗╔╩══╩══╝╚╝╚╝╚╩╝╚╩╝╚╩╝╚╩═╗╠══╩╝
+───────║║──────╔═╝║─────────────────────╔═╝║
+───────╚╝──────╚══╝─────────────────────╚══╝`);
+
 function init() {
     inquirer.prompt([
         {
             name: 'mainMenu',
             type: 'list',
             message: 'What would you like to do?',
-            choices: ['View All Departments', 'View All Roles', 'View All Employees', 'Add a Department', 'Add a Role', 'Add an Employee', 'Update an Employee Role', 'Quit']
+            choices: [
+                'View All Departments', 
+                'View All Roles', 'View All Employees', 
+                'Add a Department', 'Add a Role', 'Add an Employee', 
+                'Update an Employee Role', 
+                'Quit'
+            ]
         }
     ]).then(response => {
         switch (response.mainMenu) {
@@ -214,6 +230,55 @@ function addAnEmployee() {
                     init()
                 })
             }) 
+        })
+    })
+};
+
+function updateAnEmployeeRole() {
+    const sqlString1 = `
+    SELECT *
+    FROM role`
+
+    const sqlString2 = `
+    SELECT *
+    FROM employee`
+
+    connection.query(sqlString1, (err, data) => {
+        if(err) throw err;
+        let roles = data.map(role => ({name: role.title, value: role.id }));
+        connection.query(sqlString2, (err, data) => {
+            if(err) throw err;
+            let employees = data.map(employee => ({name: employee.first_name + ' ' + employee.last_name, value: employee.id }));
+            inquirer.prompt([
+                {
+                    name: 'employees',
+                    message: 'Which employee\'s role do you want to update?',
+                    type: 'list',
+                    choices: employees
+                },
+                {
+                    name: 'updatedRole',
+                    message: 'Which role do you want to assign the selected employee?',
+                    type: 'list',
+                    choices: roles
+                }
+            ]).then(answer => {
+                const sqlString = `
+                UPDATE employee
+                SET ? WHERE ?`
+
+                connection.query(sqlString,
+                    [{
+                        role_id: answer.updatedRole
+                    },
+                    {
+                        id: answer.employees
+                    }],
+                    (err, data) => {
+                        if(err) throw err;
+                        init()
+                })
+            })
         })
     })
 };
